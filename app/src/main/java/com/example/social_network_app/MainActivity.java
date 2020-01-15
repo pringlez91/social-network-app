@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"Setting",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_post:
-                Toast.makeText(this,"Post Status",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Post Status1",Toast.LENGTH_SHORT).show();
                 break;
 
         }
