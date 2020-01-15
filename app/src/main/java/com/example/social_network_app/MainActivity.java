@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 import android.view.View;
 import androidx.appcompat.widget.Toolbar;
-import android.content.Intent;
+import 	android.content.Intent;
 
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -103,7 +103,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"Add Friends",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_Logout:
-                Toast.makeText(this,"Logout",Toast.LENGTH_SHORT).show();
+                mAuth.signOut();
+                SendUserToLoginActivty();
                 break;
             case R.id.nav_messages:
                 Toast.makeText(this,"Messages",Toast.LENGTH_SHORT).show();
