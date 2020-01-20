@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
 
         if(TextUtils.isEmpty(email) || TextUtils.isEmpty(pass)){
 
-            Toast.makeText(this,"Please enter your email and password",Toast.LENGTH_LONG);
+            Toast.makeText(this,"Please enter your email and password",Toast.LENGTH_LONG).show();
 
         }else{
 
@@ -94,7 +94,7 @@ public class LoginActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
 
                                 SendUserMain();
-                                Toast.makeText(LoginActivity.this,"You successfully Logged n",Toast.LENGTH_LONG).show();
+                                Toast.makeText(LoginActivity.this,"You successfully Logged in",Toast.LENGTH_LONG).show();
 
                             }else{
 

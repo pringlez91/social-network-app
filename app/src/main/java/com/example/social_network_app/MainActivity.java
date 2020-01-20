@@ -7,6 +7,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 import android.view.View;
@@ -72,23 +73,25 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if(currentUser != null){
+        if(currentUser == null){
             SendUserToLoginActivty();
 
         }else{
+
             CheckUserExit();
         }
     }
 
     private void CheckUserExit() {
 
-        final String UID = mAuth.getCurrentUser().getUid();
+        final String U_I_D = mAuth.getCurrentUser().getUid();
+
 
         UserRef.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                if(!dataSnapshot.hasChild(UID)){
+                if(!dataSnapshot.hasChild(U_I_D)){
 
                     SendUserToSetup();
                 }
@@ -96,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            public void onCancelled( DatabaseError databaseError) {
 
             }
         });
@@ -106,9 +109,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void SendUserToSetup() {
 
-        Intent SetupIntent = new Intent(MainActivity.this,SetupActivity.class);
-        SetupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(SetupIntent);
+        Intent setupIntent = new Intent(MainActivity.this,SetupActivity.class);
+        setupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(setupIntent);
         finish();
 
     }
