@@ -23,93 +23,87 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class SetupActivity extends AppCompatActivity {
 
-    private EditText UserName, FullName, Country;
-    private Button SaveInfo;
-    private CircleImageView profileImage;
+  private EditText UserName, FullName, Country;
+  private Button SaveInfo;
+  private CircleImageView profileImage;
 
-    private FirebaseAuth mAuth;
-    private DatabaseReference UsersRef;
+  private FirebaseAuth mAuth;
+  private DatabaseReference UsersRef;
 
-    String currentUser;
+  String currentUser;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_setup);
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_setup);
 
-        mAuth = FirebaseAuth.getInstance();
-        currentUser = mAuth.getCurrentUser().getUid();
-        UsersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser);
+    mAuth = FirebaseAuth.getInstance();
+    currentUser = mAuth.getCurrentUser().getUid();
+    UsersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser);
 
+    UserName = (EditText) findViewById(R.id.setup_username);
+    FullName = (EditText) findViewById(R.id.setup_fn);
+    Country = (EditText) findViewById(R.id.setup_cou);
+    SaveInfo = (Button) findViewById(R.id.setup_button);
+    profileImage = (CircleImageView) findViewById(R.id.setup_img);
 
-        UserName = (EditText) findViewById(R.id.setup_username);
-        FullName = (EditText) findViewById(R.id.setup_fn);
-        Country = (EditText) findViewById(R.id.setup_cou);
-        SaveInfo = (Button) findViewById(R.id.setup_button);
-        profileImage = (CircleImageView) findViewById(R.id.setup_img);
-
-        SaveInfo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SaveAccount();
-            }
+    SaveInfo.setOnClickListener(
+        new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            SaveAccount();
+          }
         });
-    }
+  }
 
-    private void SaveAccount() {
+  private void SaveAccount() {
 
-        String username = UserName.getText().toString();
-        String fullname = FullName.getText().toString();
-        String country = Country.getText().toString();
+    String username = UserName.getText().toString();
+    String fullname = FullName.getText().toString();
+    String country = Country.getText().toString();
 
-        if(TextUtils.isEmpty(username) || TextUtils.isEmpty(fullname) || TextUtils.isEmpty(country)){
+    if (TextUtils.isEmpty(username) || TextUtils.isEmpty(fullname) || TextUtils.isEmpty(country)) {
 
-            Toast.makeText(this,"Please Enter all fields",Toast.LENGTH_LONG).show();
+      Toast.makeText(this, "Please Enter all fields", Toast.LENGTH_LONG).show();
 
-        }else{
+    } else {
 
-            HashMap userMap = new HashMap();
-            userMap.put("username",username);
-            userMap.put("fullname",fullname);
-            userMap.put("country",country);
-            userMap.put("status","none");
-            userMap.put("gender","none");
-            userMap.put("DOB","none");
-            userMap.put("relationship","single");
+      HashMap userMap = new HashMap();
+      userMap.put("username", username);
+      userMap.put("fullname", fullname);
+      userMap.put("country", country);
+      userMap.put("status", "none");
+      userMap.put("gender", "none");
+      userMap.put("DOB", "none");
+      userMap.put("relationship", "single");
 
-            UsersRef.updateChildren(userMap).addOnCompleteListener(new OnCompleteListener() {
+      UsersRef.updateChildren(userMap)
+          .addOnCompleteListener(
+              new OnCompleteListener() {
                 @Override
                 public void onComplete(@NonNull Task task) {
 
-                    if(task.isSuccessful()){
+                  if (task.isSuccessful()) {
 
-                        SendUserMain();
-                        Toast.makeText(SetupActivity.this,"Information Saved",Toast.LENGTH_LONG).show();
+                    SendUserMain();
+                    Toast.makeText(SetupActivity.this, "Information Saved", Toast.LENGTH_LONG)
+                        .show();
 
-                    }else{
+                  } else {
 
-                        String msg = task.getException().getMessage();
-                        Toast.makeText(SetupActivity.this,msg,Toast.LENGTH_LONG).show();
-
-                    }
+                    String msg = task.getException().getMessage();
+                    Toast.makeText(SetupActivity.this, msg, Toast.LENGTH_LONG).show();
+                  }
                 }
-            });
-
-
-        }
-
+              });
     }
+  }
 
+  private void SendUserMain() {
 
-
-    private void SendUserMain() {
-
-        Intent MainIntent = new Intent(SetupActivity.this, MainActivity.class);
-        MainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(MainIntent);
-        finish();
-
-    }
-
-
+    Intent MainIntent = new Intent(SetupActivity.this, MainActivity.class);
+    MainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(MainIntent);
+    finish();
+  }
 }
