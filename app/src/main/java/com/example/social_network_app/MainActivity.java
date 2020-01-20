@@ -16,6 +16,11 @@ import 	android.content.Intent;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private FirebaseAuth mAuth;
+    private DatabaseReference UserRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mAuth = FirebaseAuth.getInstance();
+        UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawable_layout);
@@ -65,10 +72,45 @@ public class MainActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        if(currentUser == null){
+        if(currentUser != null){
             SendUserToLoginActivty();
 
+        }else{
+            CheckUserExit();
         }
+    }
+
+    private void CheckUserExit() {
+
+        final String UID = mAuth.getCurrentUser().getUid();
+
+        UserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if(!dataSnapshot.hasChild(UID)){
+
+                    SendUserToSetup();
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+
+    }
+
+    private void SendUserToSetup() {
+
+        Intent SetupIntent = new Intent(MainActivity.this,SetupActivity.class);
+        SetupIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(SetupIntent);
+        finish();
+
     }
 
     private void SendUserToLoginActivty() {
@@ -77,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
         finish();
+
     }
 
     @Override
@@ -113,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,"Setting",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.nav_post:
-                Toast.makeText(this,"Post Status1",Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,"Post Status",Toast.LENGTH_SHORT).show();
                 break;
 
         }
