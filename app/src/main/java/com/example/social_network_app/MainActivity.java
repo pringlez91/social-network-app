@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void CheckUserExit() {
+    Log.d("KKK1","sucess12");
 
     final String U_I_D = mAuth.getCurrentUser().getUid();
 

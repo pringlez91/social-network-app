@@ -8,12 +8,14 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -50,7 +52,7 @@ public class SetupActivity extends AppCompatActivity {
     mAuth = FirebaseAuth.getInstance();
     currentUser = mAuth.getCurrentUser().getUid();
     UsersRef = FirebaseDatabase.getInstance().getReference().child("Users").child(currentUser);
-    imageRef = FirebaseStorage.getInstance().getReference().child("profile img");
+    imageRef = FirebaseStorage.getInstance().getReference().child("Profile Images");
 
     UserName = (EditText) findViewById(R.id.setup_username);
     FullName = (EditText) findViewById(R.id.setup_fn);
@@ -80,59 +82,74 @@ public class SetupActivity extends AppCompatActivity {
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
 
     if (requestCode == Pic && resultCode == RESULT_OK && data != null) {
-      Uri ImageUri = data.getData();
-      CropImage.activity()
+      Uri imageUri = data.getData();
+
+      CropImage.activity(imageUri)
           .setGuidelines(CropImageView.Guidelines.ON)
           .setAspectRatio(1, 1)
           .start(this);
     }
 
+    
     if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
       CropImage.ActivityResult result = CropImage.getActivityResult(data);
-      if (requestCode == RESULT_OK) {
+
+      if (resultCode == RESULT_OK) {
+
         Uri resultUri = result.getUri();
 
-        StorageReference path = imageRef.child(currentUser + ".jpg");
+        StorageReference filePath = imageRef.child(currentUser + ".jpg");
 
-        path.putFile(resultUri)
+        filePath
+            .putFile(resultUri)
             .addOnCompleteListener(
                 new OnCompleteListener<UploadTask.TaskSnapshot>() {
                   @Override
                   public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-
                     if (task.isSuccessful()) {
 
-                      final String imgURL =
-                          task.getResult().getStorage().getDownloadUrl().toString();
-                      UsersRef.child("profileimg")
-                          .setValue(imgURL)
-                          .addOnCompleteListener(
-                              new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
+                      Task<Uri> result =
+                          task.getResult().getMetadata().getReference().getDownloadUrl();
 
-                                  if (task.isSuccessful()) {
-                                    Intent setup =
-                                        new Intent(SetupActivity.this, SetupActivity.class);
-                                    startActivity(setup);
-                                    Toast.makeText(
-                                            SetupActivity.this,
-                                            "Profile Image uploaded",
-                                            Toast.LENGTH_LONG)
-                                        .show();
+                      result.addOnSuccessListener(
+                          new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                              final String downloadUrl = uri.toString();
 
-                                  } else {
-                                    String msg = task.getException().getMessage();
-                                    Toast.makeText(
-                                            SetupActivity.this, "Error: " + msg, Toast.LENGTH_LONG)
-                                        .show();
-                                  }
-                                }
-                              });
+                              UsersRef.child("profileimage")
+                                  .setValue(downloadUrl)
+                                  .addOnCompleteListener(
+                                      new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+                                          if (task.isSuccessful()) {
+                                            Intent selfIntent =
+                                                new Intent(SetupActivity.this, SetupActivity.class);
+                                            startActivity(selfIntent);
+
+                                            Toast.makeText(
+                                                    SetupActivity.this,
+                                                    "Image Uploaded",
+                                                    Toast.LENGTH_SHORT)
+                                                .show();
+
+                                          } else {
+                                            String message = task.getException().getMessage();
+                                            Toast.makeText(
+                                                    SetupActivity.this,
+                                                    "Error: " + message,
+                                                    Toast.LENGTH_SHORT)
+                                                .show();
+                                          }
+                                        }
+                                      });
+                            }
+                          });
                     }
                   }
                 });
