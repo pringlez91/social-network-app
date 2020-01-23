@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
@@ -41,6 +42,10 @@ public class MainActivity extends AppCompatActivity {
   private FirebaseAuth mAuth;
   private DatabaseReference UserRef;
 
+  private ImageButton AddPostButton;
+
+
+
   String currID;
 
   @Override
@@ -52,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
     UserRef = FirebaseDatabase.getInstance().getReference().child("Users");
     currID = mAuth.getCurrentUser().getUid();
 
+    AddPostButton = (ImageButton) findViewById(R.id.add_new_post_button);
 
     drawerLayout = (DrawerLayout) findViewById(R.id.drawable_layout);
     navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -66,38 +72,38 @@ public class MainActivity extends AppCompatActivity {
     actionBarDrawerToggle.syncState();
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
     NavProfImg = (CircleImageView) navView.findViewById(R.id.nav_profile_img);
     userName = (TextView) navView.findViewById(R.id.nav_usernam_full);
 
-    UserRef.child(currID).addValueEventListener(new ValueEventListener() {
-      @Override
-      public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+    UserRef.child(currID)
+        .addValueEventListener(
+            new ValueEventListener() {
+              @Override
+              public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-        if(dataSnapshot.exists()){
-          String fullname = dataSnapshot.child("fullname").getValue().toString();
-          String img = dataSnapshot.child("profileimage").getValue().toString();
+                if (dataSnapshot.exists()) {
 
-          userName.setText(fullname);
-          Picasso.get().load(img).placeholder(R.drawable.profile).into(NavProfImg);
+                  if(dataSnapshot.hasChild("fullname")){
 
-
-
-        }
-
-      }
+                      String fullname = dataSnapshot.child("fullname").getValue().toString();
+                      userName.setText(fullname);
 
 
-      @Override
-      public void onCancelled(@NonNull DatabaseError databaseError) {
-
-      }
-    });
+                  }
+                  if(dataSnapshot.hasChild("profileimage")){
+                      String img = dataSnapshot.child("profileimage").getValue().toString();
 
 
+                      Picasso.get().load(img).placeholder(R.drawable.profile).into(NavProfImg);
 
+                  }
 
+                }
+              }
+
+              @Override
+              public void onCancelled(@NonNull DatabaseError databaseError) {}
+            });
 
     navigationView.setNavigationItemSelectedListener(
         new NavigationView.OnNavigationItemSelectedListener() {
@@ -107,7 +113,25 @@ public class MainActivity extends AppCompatActivity {
             return false;
           }
         });
+
+    AddPostButton.setOnClickListener(new View.OnClickListener(){
+        @Override
+        public void onClick(View v){
+            SendUserToPost();
+        }
+    });
   }
+
+
+  private void SendUserToPost() {
+
+    Intent NewPostIntent = new Intent(MainActivity.this, PostActivity.class);
+    NewPostIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    startActivity(NewPostIntent);
+    finish();
+
+  }
+
 
   @Override
   protected void onStart() {
@@ -125,7 +149,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void CheckUserExit() {
-
 
     final String U_I_D = mAuth.getCurrentUser().getUid();
 
@@ -195,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(this, "Setting", Toast.LENGTH_SHORT).show();
         break;
       case R.id.nav_post:
-        Toast.makeText(this, "Post Status", Toast.LENGTH_SHORT).show();
+        SendUserToPost();
         break;
     }
   }

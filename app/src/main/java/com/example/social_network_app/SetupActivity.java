@@ -89,10 +89,16 @@ public class SetupActivity extends AppCompatActivity {
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
             if(dataSnapshot.exists()){
-                String img = dataSnapshot.child("profileimage").getValue().toString();
 
-                Picasso.get().load(img).placeholder(R.drawable.profile).into(profileImage);
+                if(dataSnapshot.hasChild("profileimage")){
 
+                    String img = dataSnapshot.child("profileimage").getValue().toString();
+
+                    Picasso.get().load(img).placeholder(R.drawable.profile).into(profileImage);
+
+
+
+                }
 
             }
 
