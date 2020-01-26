@@ -6,4 +6,49 @@
     android:layout_height="match_parent"
     tools:context=".PostActivity">
 
+    <include
+        android:id="@+id/post_page_toolbar"
+        layout="@layout/app_bar_layout" />
+
+    <ImageButton
+        android:id="@+id/post_image"
+        android:layout_width="404dp"
+        android:layout_height="289dp"
+        android:layout_marginTop="68dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/post_page_toolbar"
+        app:srcCompat="@drawable/select_image" />
+
+    <EditText
+        android:id="@+id/post_text"
+        android:layout_width="374dp"
+        android:layout_height="44dp"
+        android:layout_marginTop="48dp"
+        android:ems="10"
+        android:gravity="start|top"
+        android:hint="Image Description"
+        android:inputType="textMultiLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.432"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/post_image" />
+
+    <Button
+        android:id="@+id/post_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        android:background="@drawable/button"
+        android:backgroundTint="@android:color/holo_blue_dark"
+        android:text="Update"
+        android:textColor="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.535"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/post_text" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
